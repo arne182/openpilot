@@ -148,7 +148,7 @@ class CarState(CarStateBase):
         except KeyError:
           sport_on = 0
     if physical_buttons_LKAS:
-      self.lkas = cp_cam.vl["LKAS_HUD"]['SET_ME_X01']
+      self.lkas = cp_cam.vl["STEERING_LTA"]['SETME_X1']
     if not travis and physical_buttons_AP:
       if econ_on == 1 and dp_profile !=  DP_ECO:
         if int(Params().get('dp_accel_profile')) != DP_ECO:
@@ -251,9 +251,9 @@ class CarState(CarStateBase):
       maximum_set_speed = v_cruise_pcm_max
     speed_range = maximum_set_speed - minimum_set_speed
     if self.v_cruise_pcmactivated:
-      print("self.v_cruise_pcmlast after activated = " + str(self.v_cruise_pcmlast)) 
+      print("self.v_cruise_pcmlast after activated = " + str(self.v_cruise_pcmlast))
       print("round(ret.cruiseState.speed * CV.MS_TO_KPH)  after activated = " + str(round(ret.cruiseState.speed * CV.MS_TO_KPH)))
-    if (self.v_cruise_pcmactivated or (bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and not 
+    if (self.v_cruise_pcmactivated or (bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and not
                                        self.pcm_acc_active)) and self.v_cruise_pcmlast != round(ret.cruiseState.speed * CV.MS_TO_KPH):
       print("Engage with different speed than before")
       if ret.vEgo * CV.MS_TO_KPH < minimum_set_speed:
@@ -271,11 +271,11 @@ class CarState(CarStateBase):
         print("Speed lowered by 5")
         print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " m/s or " +  str(round(ret.cruiseState.speed * CV.MS_TO_KPH) - self.setspeedoffset) + " kph")
       else:
-        if math.floor((int(round(-ret.cruiseState.speed * CV.MS_TO_KPH)*(minimum_set_speed-7.0)/speed_range 
+        if math.floor((int(round(-ret.cruiseState.speed * CV.MS_TO_KPH)*(minimum_set_speed-7.0)/speed_range
                            + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range)
                        - self.setspeedoffset)/(round(ret.cruiseState.speed * CV.MS_TO_KPH) - (minimum_set_speed-1.0))) > 0:
           self.setspeedoffset = self.setspeedoffset + math.floor((int(round(-ret.cruiseState.speed * CV.MS_TO_KPH)*(minimum_set_speed - 7.0)/speed_range
-                                                                      + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range) 
+                                                                      + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range)
                                                                   - self.setspeedoffset)/(round(ret.cruiseState.speed * CV.MS_TO_KPH) - (minimum_set_speed - 1.0)))
           print("Speed lowered, self.setspeedoffset is now " + str(self.setspeedoffset))
         print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " m/s or " +  str(round(ret.cruiseState.speed * CV.MS_TO_KPH) - self.setspeedoffset) + " kph")
@@ -288,7 +288,7 @@ class CarState(CarStateBase):
         self.setspeedoffset = self.setspeedoffset - 4
       else:
         self.setspeedoffset = self.setspeedoffset + math.floor((int(round(-ret.cruiseState.speed * CV.MS_TO_KPH) * (minimum_set_speed - 7.0)/speed_range
-                                                                    + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range) 
+                                                                    + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range)
                                                                 - self.setspeedoffset)/(maximum_set_speed + 1.0 - round(ret.cruiseState.speed * CV.MS_TO_KPH)))
         print("Speed raised, self.setspeedoffset is now " + str(self.setspeedoffset))
         print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " m/s or " +  str(round(ret.cruiseState.speed * CV.MS_TO_KPH) - self.setspeedoffset) + " kph")
@@ -296,7 +296,7 @@ class CarState(CarStateBase):
     if self.setspeedcounter > 0:
       self.setspeedcounter = self.setspeedcounter - 1
     if bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and not self.pcm_acc_active:
-      print("self.v_cruise_pcmlast on activated = " + str(self.v_cruise_pcmlast)) 
+      print("self.v_cruise_pcmlast on activated = " + str(self.v_cruise_pcmlast))
       print("round(ret.cruiseState.speed * CV.MS_TO_KPH)  on activated = " + str(round(ret.cruiseState.speed * CV.MS_TO_KPH)))
       self.v_cruise_pcmactivated = True
     else:
@@ -546,7 +546,7 @@ class CarState(CarStateBase):
       ("TSGN4", "RSA2", 0),
       ("SPLSGN4", "RSA2", 0),
       ("DISTANCE", "ACC_CONTROL", 0),
-      ("SET_ME_X01", "LKAS_HUD", 0),
+      ("SETME_X1", "STEERING_LTA", 0),
     ]
 
     # use steering message to check if panda is connected to frc
