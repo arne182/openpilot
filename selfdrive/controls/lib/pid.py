@@ -1,5 +1,6 @@
 import numpy as np
 from common.numpy_fast import clip, interp
+from common.op_params import opParams
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
@@ -25,6 +26,7 @@ class PIController:
     self.i_rate = 1.0 / rate
     self.sat_limit = sat_limit
     self.convert = convert
+    self.op_params = opParams()
 
     self.reset()
 
