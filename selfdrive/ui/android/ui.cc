@@ -253,8 +253,8 @@ int main(int argc, char* argv[]) {
     }
     ui_draw(s);
     double u2 = millis_since_boot();
-    if (!s->scene.frontview && (u2-u1 > 66)) {
-      // warn on sub 15fps
+    if (!s->scene.frontview && (u2-u1 > 132)) {
+      // warn on sub 7fps
       LOGW("slow frame(%llu) time: %.2f", (s->sm)->frame, u2-u1);
     }
     framebuffer_swap(s->fb);

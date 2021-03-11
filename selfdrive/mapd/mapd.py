@@ -22,7 +22,9 @@ from selfdrive.version import version, dirty
 from common.transformations.coordinates import geodetic2ecef
 from selfdrive.mapd.mapd_helpers import MAPS_LOOKAHEAD_DISTANCE, Way, circle_through_points, rate_curvature_points
 from selfdrive.trafficd.traffic_manager import TrafficdThread
+from common.op_params import opParams
 
+traffic_lights = opParams().get('traffic_lights')
 #DEFAULT_SPEEDS_BY_REGION_JSON_FILE = BASEDIR + "/selfdrive/mapd/default_speeds_by_region.json"
 #from selfdrive.mapd import default_speeds_generator
 #default_speeds_generator.main(DEFAULT_SPEEDS_BY_REGION_JSON_FILE)
@@ -234,9 +236,9 @@ class QueryThread(LoggerThread):
                             if n.tags['railway'] == 'level_crossing':
                                 traffic_light_in_range = True
                                 break
-                    if self.trafficd_thread.running and not traffic_light_in_range:
+                    if self.trafficd_thread.running and not traffic_light_in_range and traffic_lights:
                         self.trafficd_thread.stop()
-                    if traffic_light_in_range and not self.trafficd_thread.running:
+                    if traffic_light_in_range and not self.trafficd_thread.running and traffic_lights:
                         self.trafficd_thread.start()
 
                 except Exception as e:

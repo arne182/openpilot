@@ -176,7 +176,7 @@ class CarState(CarStateBase):
           self.leftblindspotcounter = 21
         if (self.leftblindspotD1 > 10) or (self.leftblindspotD2 > 10):
           self.leftblindspot = bool(1)
-          print("Left Blindspot Detected")
+          #print("Left Blindspot Detected")
       elif  cp.vl["DEBUG"]['BLINDSPOTSIDE']==66: #Right
         if cp.vl["DEBUG"]['BLINDSPOTD1'] != self.rightblindspotD1:
           self.rightblindspotD1 = cp.vl["DEBUG"]['BLINDSPOTD1']
@@ -186,7 +186,7 @@ class CarState(CarStateBase):
           self.rightblindspotcounter = 21
         if (self.rightblindspotD1 > 10) or (self.rightblindspotD2 > 10):
           self.rightblindspot = bool(1)
-          print("Right Blindspot Detected")
+          #print("Right Blindspot Detected")
       self.rightblindspotcounter = self.rightblindspotcounter -1 if self.rightblindspotcounter > 0 else 0
       self.leftblindspotcounter = self.leftblindspotcounter -1 if self.leftblindspotcounter > 0 else 0
       if self.leftblindspotcounter == 0:
@@ -236,7 +236,7 @@ class CarState(CarStateBase):
       ret.cruiseState.speed = cp.vl["PCM_CRUISE_2"]['SET_SPEED']
       self.low_speed_lockout = cp.vl["PCM_CRUISE_2"]['LOW_SPEED_LOCKOUT'] == 2
       ret.cruiseState.available = self.main_on
-
+    #print("ret.cruiseState.speed =" + str(ret.cruiseState.speed))
     if self.CP.carFingerprint in TSS2_CAR:
       minimum_set_speed = 27
     elif self.CP.carFingerprint == CAR.RAV4:
@@ -248,35 +248,35 @@ class CarState(CarStateBase):
       maximum_set_speed = 177
     v_cruise_pcm_max = ret.cruiseState.speed
     if v_cruise_pcm_max < minimum_set_speed and self.pcm_acc_active:
-      print("Min set speed changed. Was " + str(minimum_set_speed) + ", now " + str(v_cruise_pcm_max))
+      #print("Min set speed changed. Was " + str(minimum_set_speed) + ", now " + str(v_cruise_pcm_max))
       minimum_set_speed = v_cruise_pcm_max
     if v_cruise_pcm_max > maximum_set_speed and self.pcm_acc_active:
-      print("Max set speed changed. Was " + str(maximum_set_speed) + ", now " + str(v_cruise_pcm_max))
+      #print("Max set speed changed. Was " + str(maximum_set_speed) + ", now " + str(v_cruise_pcm_max))
       maximum_set_speed = v_cruise_pcm_max
     speed_range = maximum_set_speed - minimum_set_speed
-    if self.v_cruise_pcmactivated:
-      print("self.v_cruise_pcmlast after activated = " + str(self.v_cruise_pcmlast)) 
-      print("ret.cruiseState.speed  after activated = " + str(ret.cruiseState.speed))
+    #if self.v_cruise_pcmactivated:
+      #print("self.v_cruise_pcmlast after activated = " + str(self.v_cruise_pcmlast)) 
+      #print("ret.cruiseState.speed  after activated = " + str(ret.cruiseState.speed))
     if (self.v_cruise_pcmactivated or (bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and not 
                                        self.pcm_acc_active)) and self.v_cruise_pcmlast != ret.cruiseState.speed:
-      print("Engage with different speed than before")
+      #print("Engage with different speed than before")
       if ret.vEgo * CV.MS_TO_KPH < minimum_set_speed:
-        print("speed lower than min_set_speed")
+        #print("speed lower than min_set_speed")
         self.setspeedoffset = max(min(int(minimum_set_speed - ret.vEgo * CV.MS_TO_KPH),(minimum_set_speed-7.0)),0.0)
-        print("self.setspeedoffset = " + str (self.setspeedoffset))
+        #print("self.setspeedoffset = " + str (self.setspeedoffset))
         self.v_cruise_pcmlast = ret.cruiseState.speed
       else:
-        print("speed is higher than min_set_speed")
+        #print("speed is higher than min_set_speed")
         self.setspeedoffset = 0
-        print("self.setspeedoffset = " + str (self.setspeedoffset))
+        #print("self.setspeedoffset = " + str (self.setspeedoffset))
         self.v_cruise_pcmlast = ret.cruiseState.speed
     if ret.cruiseState.speed < self.v_cruise_pcmlast and (bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and self.pcm_acc_active):
-      print("Speed lowered")
+      #print("Speed lowered")
       if self.setspeedcounter > 0 and ret.cruiseState.speed > minimum_set_speed:
         self.setspeedoffset = self.setspeedoffset + 4
-        print("Speed lowered by 5")
-        print("self.setspeedoffset = " + str (self.setspeedoffset))
-        print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
+        #print("Speed lowered by 5")
+        #print("self.setspeedoffset = " + str (self.setspeedoffset))
+        #print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
       else:
         if math.floor((int((-ret.cruiseState.speed)*(minimum_set_speed-7.0)/speed_range 
                            + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range)
@@ -284,40 +284,40 @@ class CarState(CarStateBase):
           self.setspeedoffset = self.setspeedoffset + math.floor((int((-ret.cruiseState.speed)*(minimum_set_speed - 7.0)/speed_range
                                                                       + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range) 
                                                                   - self.setspeedoffset)/(ret.cruiseState.speed - (minimum_set_speed - 1.0)))
-          print("Speed lowered, self.setspeedoffset is now " + str(self.setspeedoffset))
-        print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
+          #print("Speed lowered, self.setspeedoffset is now " + str(self.setspeedoffset))
+        #print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
       self.setspeedcounter = 50
     if self.v_cruise_pcmlast < ret.cruiseState.speed and (bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and self.pcm_acc_active):
-      print("Speed raised")
+      #print("Speed raised")
       if self.setspeedcounter > 0 and (self.setspeedoffset - 4) > 0:
-        print("Speed raised by 5")
-        print("self.setspeedoffset = " + str (self.setspeedoffset))
-        print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
+        #print("Speed raised by 5")
+        #print("self.setspeedoffset = " + str (self.setspeedoffset))
+        #print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
         self.setspeedoffset = self.setspeedoffset - 4
       else:
         self.setspeedoffset = self.setspeedoffset + math.floor((int((-ret.cruiseState.speed) * (minimum_set_speed - 7.0)/speed_range
                                                                     + maximum_set_speed * (minimum_set_speed - 7.0)/speed_range) 
                                                                 - self.setspeedoffset)/(maximum_set_speed + 1.0 - ret.cruiseState.speed))
-        print("Speed raised, self.setspeedoffset is now " + str(self.setspeedoffset))
-        print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
+        #print("Speed raised, self.setspeedoffset is now " + str(self.setspeedoffset))
+        #print("ret.cruiseState.speed = " + str(ret.cruiseState.speed) + " kph or " +  str(ret.cruiseState.speed - self.setspeedoffset) + " kph")
       self.setspeedcounter = 50
     if self.setspeedcounter > 0:
       self.setspeedcounter = self.setspeedcounter - 1
     if bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE']) and not self.pcm_acc_active:
-      print("self.v_cruise_pcmlast on activated = " + str(self.v_cruise_pcmlast)) 
-      print("ret.cruiseState.speed  on activated = " + str(ret.cruiseState.speed))
+      #print("self.v_cruise_pcmlast on activated = " + str(self.v_cruise_pcmlast)) 
+      #print("ret.cruiseState.speed  on activated = " + str(ret.cruiseState.speed))
       self.v_cruise_pcmactivated = True
     else:
       self.v_cruise_pcmactivated = False
     self.v_cruise_pcmlast = ret.cruiseState.speed
     if ret.cruiseState.speed - self.setspeedoffset < 7:
-      print("Set speed lower than 7 kph.")
+      #print("Set speed lower than 7 kph.")
       self.setspeedoffset = ret.cruiseState.speed - 7
-      print("self.setspeedoffset = " + str (self.setspeedoffset))
+      #print("self.setspeedoffset = " + str (self.setspeedoffset))
     if ret.cruiseState.speed - self.setspeedoffset > maximum_set_speed:
-      print("Set speed higher than max_set_speed")
+      #print("Set speed higher than max_set_speed")
       self.setspeedoffset = ret.cruiseState.speed - maximum_set_speed
-      print("self.setspeedoffset = " + str (self.setspeedoffset))
+      #print("self.setspeedoffset = " + str (self.setspeedoffset))
 
     if set_speed_offset or travis:
       self.setspeedoffset = 0.0

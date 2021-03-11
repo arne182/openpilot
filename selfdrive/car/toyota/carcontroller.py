@@ -33,6 +33,63 @@ def poll_blindspot_status(lr):
   m = lr + b'\x02\x21\x69\x00\x00\x00\x00'
   return make_can_msg(0x750, m, 0)
 
+def create_rsa1_command(packer,TSGN1,SPDVAL1,SPLSGN1,TSGN2,SPDVAL2,SPLSGN2, SYNCID1):
+ """Creates a CAN message for the Road Sign System."""
+ values = {
+   "TSGN1": TSGN1,
+   "TSGNGRY1": 0,
+   "TSGNHLT1": 0,
+   "SPDVAL1": SPDVAL1,
+   "SPLSGN1": SPLSGN1,
+   "SPLSGN2": SPLSGN2,
+   "TSGN2": TSGN2,
+   "TSGNGRY2": 0,
+   "TSGNHLT2": 0,
+   "SPDVAL2": SPDVAL2,
+   "BZRRQ_P": 0,
+   "BZRRQ_A": 0,
+   "SYNCID1": SYNCID1,
+ }
+
+ return packer.make_can_msg("RSA1", 0, values)
+
+def create_rsa2_command(packer,TSGN3,SPLSGN3,TSGN4,SPLSGN4,DPSGNREQ,SGNNUMP,SGNNUMA,SPDUNT,SYNCID2):
+ """Creates a CAN message for the Road Sign System."""
+ values = {
+   "TSGN3": TSGN3,
+   "TSGNGRY3": 0,
+   "TSGNHLT3": 0,
+   "SPLSGN3": SPLSGN3,
+   "SPLSGN4": SPLSGN4,
+   "TSGN4": TSGN4,
+   "TSGNGRY4": 0,
+   "TSGNHLT4": 0,
+   "DPSGNREQ": DPSGNREQ,
+   "SGNNUMP": SGNNUMP,
+   "SGNNUMA": SGNNUMA,
+   "SPDUNT": SPDUNT,
+   "TSRWMSG": 0,
+   "SYNCID2": SYNCID2,
+ }
+
+ return packer.make_can_msg("RSA2", 0, values)
+
+def create_rsa3_command(packer,OVSPVALL,OVSPVALM,OVSPVALH):
+ """Creates a CAN message for the Road Sign System."""
+ values = {
+   "TSREQPD": 1,
+   "TSRMSW": 1,
+   "OTSGNNTM": 3,
+   "NTLVLSPD": 3,
+   "OVSPNTM": 3,
+   "OVSPVALL": OVSPVALL,
+   "OVSPVALM": OVSPVALM,
+   "OVSPVALH": OVSPVALH,
+   "TSRSPU": 1,
+ }
+
+ return packer.make_can_msg("RSA3", 0, values)
+
 def accel_hysteresis(accel, accel_steady, enabled):
 
   # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
@@ -59,7 +116,9 @@ class CarController():
     self.blindspot_blink_counter_right = 0
     self.blindspot_debug_enabled_left = False
     self.blindspot_debug_enabled_right = False
-
+    
+    self.rsa_sync_counter = 0
+    
     self.last_fault_frame = -200
     self.steer_rate_limited = False
 
@@ -278,5 +337,20 @@ class CarController():
         #can_sends.append(make_can_msg(0x750, b'\x42\x02\x21\x69\x00\x00\x00\x00', 0))
         can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
         #print("debug Right blindspot poll")
+        
+    if frame > 200:
+      if frame % 100 == 0:
+        tsgn1 = 1 if CS.smartspeed > 0 else 0
+        can_sends.append(create_rsa1_command(self.packer,tsgn1,round(CS.smartspeed*3.6),0,CS.tsgn1,CS.spdval1,CS.splsgn1,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa2_command(self.packer,CS.tsgn3,CS.splsgn3,CS.tsgn4,CS.splsgn4,1,1,3,1,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa3_command(self.packer,2,5,10))
+        #print (str(self.rsa_sync))
+        self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
+    else:
+      if frame % 100 == 0:
+        can_sends.append(create_rsa1_command(self.packer,0,0,0,0,0,0,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa2_command(self.packer,0,0,0,0,0,0,0,0,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa3_command(self.packer,-5,-5,-5))
+        self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
 
     return can_sends

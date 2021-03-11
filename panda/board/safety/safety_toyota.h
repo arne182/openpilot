@@ -34,7 +34,7 @@ const CanMsg TOYOTA_TX_MSGS[] = {{0x283, 0, 7}, {0x2E6, 0, 8}, {0x2E7, 0, 8}, {0
                                   {0x367, 0, 2}, {0x414, 0, 8}, {0x489, 0, 8}, {0x48a, 0, 8}, {0x48b, 0, 8}, {0x4d3, 0, 8}, // CAM bus 0
                                   {0x130, 1, 7}, {0x240, 1, 7}, {0x241, 1, 7}, {0x244, 1, 7}, {0x245, 1, 7}, {0x248, 1, 7}, {0x466, 1, 3}, // CAM bus 1
                                   {0x2E4, 0, 5}, {0x411, 0, 8}, {0x412, 0, 8}, {0x343, 0, 8}, {0x1D2, 0, 8},  // LKAS + ACC
-                                  {0x200, 0, 6}, {0x750, 0, 8}};  // interceptor + BSM
+                                  {0x200, 0, 6}, {0x750, 0, 8}, {0x489, 0, 8}, {0x48A, 0, 8}, {0x48B, 0, 8}};  // interceptor + BSM + RSA
 
 AddrCheckStruct toyota_rx_checks[] = {
   {.msg = {{ 0xaa, 0, 8, .check_checksum = false, .expected_timestep = 12000U}}},
@@ -262,9 +262,10 @@ static int toyota_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
       // block stock lkas messages and stock acc messages (if OP is doing ACC)
       // in TSS2, 0x191 is LTA which we need to block to avoid controls collision
       int is_lkas_msg = ((addr == 0x2E4) || (addr == 0x412) || (addr == 0x191));
+      int is_rsa_msg = ((addr == 0x489) || (addr == 0x48A) || (addr == 0x48B));
       // in TSS2 the camera does ACC as well, so filter 0x343
       int is_acc_msg = (addr == 0x343);
-      int block_msg = is_lkas_msg || is_acc_msg;
+      int block_msg = is_lkas_msg || is_acc_msg || is_rsa_msg;
       if (!block_msg) {
         bus_fwd = 0;
       }

@@ -3,9 +3,11 @@ import numpy as np
 from cereal import log
 from common.dp_common import get_last_modified, param_get_if_updated
 from common.dp_time import LAST_MODIFIED_LANE_PLANNER
+from common.op_params import opParams
 from common.travis_checker import travis
 CAMERA_OFFSET = 0.06  # m from center car to camera
 
+use_virtual_middle_line = opParams().get('use_virtual_middle_line')
 
 def compute_path_pinv(length=50):
   deg = 3
@@ -106,6 +108,16 @@ class LanePlanner:
     # Find current lanewidth
     self.lane_width_certainty += 0.05 * (l_prob * r_prob - self.lane_width_certainty)
     current_lane_width = abs(self.l_poly[3] - self.r_poly[3])
+    if use_virtual_middle_line and v_ego < 14.15:
+      #lane_width = self.lane_width
+      #print(current_lane_width)
+      if current_lane_width < 2.0:
+        self.r_poly[3] -= 2.0 - current_lane_width # TODO: this should be l_poly if isRHD
+        current_lane_width = 2.0
+      elif current_lane_width > 4.0:
+        factor = min(current_lane_width - 4.0, 1.0)
+        self.l_poly[3] -= current_lane_width/2 * factor # TODO: this should be r_poly if isRHD
+        current_lane_width -= current_lane_width/2 * factor
     self.lane_width_estimate += 0.005 * (current_lane_width - self.lane_width_estimate)
     speed_lane_width = interp(v_ego, [0., 14., 20.], [2.5, 3., 3.5]) # German Standards
     self.lane_width = self.lane_width_certainty * self.lane_width_estimate + \

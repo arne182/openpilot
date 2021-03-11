@@ -337,7 +337,7 @@ CM_ SG_ 1042 SET_ME_1 "unclear what this is, but it's always 1 in drive traces";
 CM_ SG_ 1042 REPEATED_BEEPS "recommended for fcw and other important alerts";
 CM_ SG_ 1161 SPDVAL1 "Numbers 0-199 is displayed, 200-254 displays circle without number and 255 is for no limit.";
 CM_ SG_ 1161 SYNCID1 "counter from 1 to f at 1 Hz";
-CM_ SG_ 1161 SPDVAL2 "conditional speed value 70"
+CM_ SG_ 1161 SPDVAL2 "Second speed value usally conditional";
 CM_ SG_ 1162 SGNNUMP "1 if SPDVAL1 is set, otherwise 0";
 CM_ SG_ 1162 SYNCID2 "counter from 1 to f at 1 Hz";
 CM_ SG_ 1163 TSREQPD "always 1";
@@ -362,9 +362,9 @@ VAL_ 1042 RIGHT_LINE 3 "orange" 2 "faded" 1 "solid" 0 "none";
 VAL_ 1042 LEFT_LINE 3 "orange" 2 "faded" 1 "solid" 0 "none";
 VAL_ 1553 UNITS 1 "km" 2 "miles";
 VAL_ 1556 TURN_SIGNALS 3 "none" 2 "right" 1 "left";
-VAL_ 1161 TSGN1 1 "speed sign" 0 "none";
+VAL_ 1161 TSGN1 36 "speed sign mph" 1 "speed sign kph" 0 "none";
 VAL_ 1161 TSGN2 1 "speed sign" 0 "none";
-VAL_ 1161 SPLSGN2 15 "conditional blank" 4 "wet road" 5 "rain" 0 "none";
+VAL_ 1161 SPLSGN2 15 "conditional blank" 6 "snow" 5 "rain" 4 "wet road" 3 "left" 2 "right" 1 "time" 0 "none";
 VAL_ 1162 TSGN3 0 "none" 1 "speed sign" 2 "0 unlimited" 7 "unlimited" 16 "highway" 17 "no highway" 18 "motorway" 19 "no motorway" 20 "in city" 21 "outside city" 22 "pedestrian area" 23 "no pedestrian area" 65 "no overtaking left" 66 "no overtaking right" 67 "overtaking allowed again" 129 "no entry";
 VAL_ 1162 SPLSGN3 15 "conditional blank" 4 "wet road" 5 "rain" 0 "none";
 
